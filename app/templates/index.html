@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en"
+<html>
+  <head>
+    <style>
+       #map {
+        height: 400px;
+        width: 100%;
+       }
+    </style>
+  </head>
+  <body>
+
+    <h3> Posts Map</h3>
+    <div id="map"></div>
+
+    <script>
+
+	var map;
+	var marker;
+	var infowindow;
+	var messagewindow;
+
+
+	function placePosts(posts) {
+		for (i = 0; i < posts.length; i++) {
+			post = new google.maps.Marker ( {
+				position: new google.maps.LatLng(posts[i].latitude, posts[i].longitude),
+				map: map
+				
+			}
+			);
+		}
+	}
+
+      function initMap() {
+        var centerMapHere = {lat: 38.9072, lng: -77.0369};
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 10,
+          center: centerMapHere
+        });
+
+		placePosts( {{ posts | safe }});
+
+
+
+		infowindow = new google.maps.InfoWindow({
+			content: document.getElementById('form')
+		})
+
+		messagewindow = new google.maps.InfoWindow({
+			content: document.getElementById('message')
+		});
+
+
+		google.maps.event.addListenerOnce(map, 'click', function(event) {
+			marker = new google.maps.Marker( {
+				position: event.latLng,
+				map:map
+			});
+
+
+		var latlng = marker.getPosition();
+		var latitude = document.getElementById('latitude').value = latlng.lat();
+
+		var longitude = document.getElementById('longitude').value = latlng.lng();
+
+		google.maps.event.addListener(marker, 'click', function() {
+			infowindow.open(map,marker);
+		});
+		});
+
+	  }
+
+
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=APIKEY&callback=initMap">
+    </script>
+		
+		<head> <title> Post Map </title> </head>
+		<form action="/submitpost" method="POST">
+		
+		<label for="latitude"> Latitude </label>
+		<input name="latitude" id="latitude" type="text">
+
+		<label for="longitude"> Longitude </label>
+		<input name="longitude" id="longitude" type="text">
+
+		<input type="submit" value = "Submit">
+		</form>
+
+	</body>
+</html>
